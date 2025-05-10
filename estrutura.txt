@@ -1,0 +1,63 @@
+// Estrutura atualizada do sistema com integrações de Google Calendar e Microsoft Teams (Outlook Calendar)
+
+// --- FRONTEND ---
+// public/
+// ├── css/
+// │   └── styles.css (incluir classes para tema claro/escuro)
+// ├── js/
+// │   ├── main.js (gerenciar dashboard, filtros, integração de calendários)
+// │   └── themeToggle.js (alternar tema)
+// ├── img/ (imagens do sistema)
+// ├── index.html (login)
+// ├── dashboard.html (dashboard geral e por projeto)
+// ├── perfil.html (visualização e troca de senha)
+// ├── admin.html (painel administrativo)
+// └── calendar.html (visualização de compromissos sincronizados)
+
+
+// --- BACKEND (Node.js + Express) ---
+// src/
+// ├── controllers/
+// │   ├── authController.js
+// │   ├── userController.js
+// │   ├── dashboardController.js
+// │   ├── projectController.js
+// │   ├── settingsController.js
+// │   └── calendarController.js (gerencia requisições de calendário)
+// ├── routes/
+// │   ├── authRoutes.js
+// │   ├── userRoutes.js
+// │   ├── dashboardRoutes.js
+// │   ├── projectRoutes.js
+// │   ├── settingsRoutes.js
+// │   └── calendarRoutes.js (endpoints de integração com calendários)
+// ├── models/
+// │   ├── User.js
+// │   ├── Project.js
+// │   ├── TimeEntry.js
+// │   ├── CostCenter.js
+// │   ├── Department.js
+// │   └── Shift.js
+// ├── middleware/
+// │   ├── authMiddleware.js (validação JWT/sessão)
+// │   └── roleMiddleware.js (permissões por tipo de usuário)
+// ├── utils/
+// │   ├── emailService.js (Nodemailer)
+// │   └── excelExporter.js (ExcelJS)
+// ├── integrations/
+// │   ├── googleCalendarService.js (integração com Google Calendar via OAuth 2.0)
+// │   └── microsoftCalendarService.js (integração com Microsoft Graph API)
+// ├── config/
+// │   ├── db.js (conexão com MySQL)
+// │   ├── googleConfig.js (credenciais da Google API)
+// │   └── microsoftConfig.js (credenciais da Microsoft Graph API)
+// ├── views/ (se usar EJS ou outro renderizador de server side)
+// └── app.js (arquivo principal do servidor)
+
+
+// --- OUTROS ---
+// .env (configurações de ambiente como chaves de API, DB, OAuth)
+// package.json (dependências do projeto)
+// README.md (documentação do projeto com instruções de autenticação OAuth e uso dos calendários)
+
+// Posso montar os arquivos base (como app.js, googleCalendarService.js, etc.) se desejar prosseguir com o desenvolvimento.

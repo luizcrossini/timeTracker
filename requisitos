@@ -1,0 +1,54 @@
+dashboard tela 
+
+menu do lado esquerdo 
+    dashboard
+    perfil
+        opção de mudar a senha
+        alterar foto
+    configurações (so aparecerá para admin)
+
+No centro:
+    Filtros:
+        filtros por projetos ( trazendo da Tabela projetos do bd)
+        filtro de datas 
+    cards do dashboard (nesse pega todos os filtros ou nenhum)
+        total de horas (soma do total das horas no banco de dados)
+        total de projetos ativos (count projetos ativos)
+        total de colaboradores (count de colaboradores ativos)
+    
+    Gráfico horas por projeto
+        Gráfico de barras (trazendo do bd)
+    
+    últimos lançamentos:
+    trazer do banco de dados os últimos 10 lançamentos da pessoa
+    
+        botão de adicionar horas:
+            - data ( preenchida pelo usuario)
+            -hora de inicio e fim
+            projeto ( dropdown buscando do banco de dados)
+            centro de custo (dropdown buscando do bando de dados)
+            observação: campo de texto que o usuário pode colocar descrição de suas tarefas 
+            salvar isso no banco de dados 
+            
+        no esqueci minha senha: 
+        a pessoa coloca o e-mail - enviar link de recuperação
+                sistema verifica se esse e-mail ta cadastrado 
+                    se sim: envia um e-mail para configurar nova senha
+                    se não: avisa que esse e-mail não foi encontrado
+        no redefinir senha ele adiciona a nova senha e volta para o login
+     Na parte de admin, temos que ter a seguinte questão:
+        toda a parametrização de sistema:
+                criação de usuários:
+                    -nome
+                    -e-mail
+                    -select ativo ou inativo
+                    select tipo de usuario
+                        admin ou user
+                    -senha vai como padrão para usuário (mudar123456)
+                    ao criar o usuário ele recebe um e-mail com o link para ele acessar a ferramenta
+                criação de projetos
+                    -nome do projeto
+                    -centro de custo
+                criação de centro de custo
+                        nome do centro de custo
+

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minha conta - Time Tracker Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white p-6 rounded shadow w-full max-w-lg space-y-6">
+    <h1 class="text-2xl font-bold text-center">Minha Conta</h1>
+
+    <div class="flex flex-col items-center">
+      <img src="/img/user.png" alt="Foto de perfil" class="w-24 h-24 rounded-full mb-4 border" id="fotoUsuario" />
+      <label class="text-sm font-medium mb-1">Alterar foto de perfil</label>
+      <input type="file" id="novaFoto" accept="image/*" class="mb-4" />
+      <button onclick="uploadFoto()" class="bg-blue-600 text-white px-4 py-1 rounded text-sm">Salvar Foto</button>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium">Nome:</label>
+      <input type="text" id="nomeUsuario" class="w-full border p-2 rounded mb-4" />
+
+      <label class="block text-sm font-medium">E-mail:</label>
+      <input type="email" id="emailUsuario" class="w-full border p-2 rounded mb-4" disabled />
+
+      <label class="block text-sm font-medium">Nova senha:</label>
+      <input type="password" id="novaSenha" class="w-full border p-2 rounded mb-4" />
+
+      <div class="flex gap-4">
+        <button onclick="salvarNome()" class="bg-indigo-600 text-white px-4 py-1 rounded text-sm">Salvar Nome</button>
+        <button onclick="alterarSenha()" class="bg-green-600 text-white px-4 py-1 rounded text-sm">Alterar Senha</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function carregarPerfil() {
+      const res = await fetch('/api/auth/perfil', { credentials: 'include' });
+      if (res.ok) {
+        const dados = await res.json();
+        document.getElementById('nomeUsuario').value = dados.nome;
+        document.getElementById('emailUsuario').value = dados.email;
+        if (dados.foto) document.getElementById('fotoUsuario').src = dados.foto;
+      }
+    }
+
+    async function alterarSenha() {
+      const novaSenha = document.getElementById('novaSenha').value;
+      if (!novaSenha) return alert('Digite a nova senha');
+      await fetch('/api/auth/alterar-senha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ senha: novaSenha })
+      });
+      alert('Senha alterada com sucesso!');
+      document.getElementById('novaSenha').value = '';
+    }
+
+    async function salvarNome() {
+      const nome = document.getElementById('nomeUsuario').value;
+      await fetch('/api/auth/editar-nome', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ nome })
+      });
+      alert('Nome atualizado!');
+    }
+
+    async function uploadFoto() {
+      const file = document.getElementById('novaFoto').files[0];
+      if (!file) return alert('Selecione uma imagem');
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'SEU_UPLOAD_PRESET'); // Trocar futuramente
+
+      const cloudName = 'SEU_CLOUD_NAME'; // Trocar futuramente
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+      if (data.secure_url) {
+        await fetch('/api/auth/editar-foto', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ foto: data.secure_url })
+        });
+        document.getElementById('fotoUsuario').src = data.secure_url;
+        alert('Foto atualizada com sucesso!');
+      } else {
+        alert('Erro ao fazer upload da imagem');
+      }
+    }
+
+    carregarPerfil();
+  </script>
+</body>
+</html>

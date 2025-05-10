@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrar Horas - Time Tracker Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-6">
+  <div class="bg-white p-6 rounded shadow w-full max-w-xl space-y-6">
+    <h1 class="text-xl font-bold text-center">Registrar Horas</h1>
+    <form id="formRegistro" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium">Data:</label>
+        <input type="date" id="dataRegistro" class="w-full p-2 border rounded" required />
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium">Hora Início:</label>
+          <input type="time" id="horaInicio" class="w-full p-2 border rounded" required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Hora Fim:</label>
+          <input type="time" id="horaFim" class="w-full p-2 border rounded" required />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">Projeto:</label>
+        <select id="projeto" class="w-full p-2 border rounded" required></select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">Centro de Custo:</label>
+        <select id="centroCusto" class="w-full p-2 border rounded" required></select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">Observação:</label>
+        <textarea id="observacao" class="w-full p-2 border rounded" rows="3"></textarea>
+      </div>
+
+      <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded w-full">Salvar</button>
+    </form>
+    <p id="mensagem" class="text-sm text-center mt-2"></p>
+  </div>
+
+  <script>
+    async function carregarProjetos() {
+      const res = await fetch('/api/projetos', { credentials: 'include' });
+      const projetos = await res.json();
+      const select = document.getElementById('projeto');
+      projetos.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = p.nome;
+        select.appendChild(opt);
+      });
+    }
+
+    async function carregarCentrosDeCusto(idProjeto) {
+      const res = await fetch(`/api/projetos/${idProjeto}/centros-custo`, { credentials: 'include' });
+      const custos = await res.json();
+      const select = document.getElementById('centroCusto');
+      select.innerHTML = '';
+      custos.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.nome;
+        select.appendChild(opt);
+      });
+    }
+
+    document.getElementById('projeto').addEventListener('change', e => {
+      const idProjeto = e.target.value;
+      if (idProjeto) carregarCentrosDeCusto(idProjeto);
+    });
+
+    document.getElementById('formRegistro').addEventListener('submit', async e => {
+      e.preventDefault();
+      const data = document.getElementById('dataRegistro').value;
+      const inicio = document.getElementById('horaInicio').value;
+      const fim = document.getElementById('horaFim').value;
+      const projeto = document.getElementById('projeto').value;
+      const centro = document.getElementById('centroCusto').value;
+      const obs = document.getElementById('observacao').value;
+
+      const res = await fetch('/api/usuario/lancar-horas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ data, hora_inicio: inicio, hora_fim: fim, projeto, centro_custo: centro, observacao: obs })
+      });
+
+      const msg = document.getElementById('mensagem');
+      if (res.ok) {
+        msg.textContent = 'Horas registradas com sucesso!';
+        msg.className = 'text-green-600';
+        document.getElementById('formRegistro').reset();
+      } else {
+        msg.textContent = 'Erro ao registrar horas. Verifique os campos.';
+        msg.className = 'text-red-600';
+      }
+    });
+
+    carregarProjetos();
+  </script>
+</body>
+</html>

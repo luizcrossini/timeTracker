@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Time Tracker Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 min-h-screen flex">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-gray-800 text-white flex flex-col p-6 space-y-4">
+    <h2 class="text-xl font-bold">Time Tracker Pro</h2>
+    <nav class="flex flex-col space-y-2" id="menuLateral">
+      <a href="/main-dashboard.html" class="hover:bg-gray-700 px-3 py-2 rounded">Dashboard</a>
+      <a href="/profile.html" class="hover:bg-gray-700 px-3 py-2 rounded">Meu Perfil</a>
+      <!-- Administração será inserida dinamicamente -->
+    </nav>
+  </aside>
+
+  <div class="flex-1 flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow p-4 flex justify-between items-center">
+      <h1 class="text-xl font-bold">Dashboard</h1>
+      <div class="relative group">
+        <img src="/img/user.png" alt="Foto do Usuário" class="w-10 h-10 rounded-full cursor-pointer">
+        <div class="absolute right-0 top-full mt-2 hidden group-hover:block bg-white shadow rounded w-48 z-50 text-sm text-gray-700">
+          <a href="/profile.html" class="block px-4 py-2 hover:bg-gray-100">Ver Perfil</a>
+          <a href="#" onclick="editarFoto()" class="block px-4 py-2 hover:bg-gray-100">Editar Foto</a>
+          <a href="#" onclick="logout()" class="block px-4 py-2 hover:bg-gray-100">Sair</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="p-6 space-y-6">
+      <section class="flex flex-wrap gap-4 items-end">
+        <div>
+          <label for="filtroProjeto" class="text-sm font-medium">Projeto:</label>
+          <select id="filtroProjeto" class="p-2 border rounded">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div>
+          <label for="dataInicio" class="text-sm font-medium">De:</label>
+          <input type="date" id="dataInicio" class="p-2 border rounded">
+        </div>
+        <div>
+          <label for="dataFim" class="text-sm font-medium">Até:</label>
+          <input type="date" id="dataFim" class="p-2 border rounded">
+        </div>
+        <button onclick="carregarDashboard()" class="bg-blue-600 text-white px-4 py-2 rounded">Aplicar Filtros</button>
+      </section>
+
+      <section class="grid md:grid-cols-3 gap-4" id="cards">
+        <div class="bg-white p-4 rounded shadow">
+          <h2 class="text-sm text-gray-500">Total de Horas</h2>
+          <p id="totalHoras" class="text-2xl font-bold">--</p>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <h2 class="text-sm text-gray-500">Projetos Ativos</h2>
+          <p id="projetosAtivos" class="text-2xl font-bold">--</p>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <h2 class="text-sm text-gray-500">Colaboradores</h2>
+          <p id="totalUsuarios" class="text-2xl font-bold">--</p>
+        </div>
+      </section>
+
+      <section class="bg-white p-6 rounded shadow">
+        <h2 class="text-lg font-semibold mb-4">Horas por Projeto</h2>
+        <canvas id="graficoProjetos" height="100"></canvas>
+      </section>
+
+      <section class="bg-white p-6 rounded shadow">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold">Últimos Lançamentos</h2>
+          <a href="registrarHoras.html" class="bg-green-600 text-white px-4 py-2 rounded text-sm">Adicionar Hora</a>
+        </div>
+        <div class="overflow-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="text-left py-2 px-3">Data</th>
+                <th class="text-left py-2 px-3">Hora Início</th>
+                <th class="text-left py-2 px-3">Hora Fim</th>
+                <th class="text-left py-2 px-3">Projeto</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaLancamentos">
+              <!-- Conteúdo preenchido via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    async function carregarDashboard() {
+      const projeto = document.getElementById('filtroProjeto').value;
+      const inicio = document.getElementById('dataInicio').value;
+      const fim = document.getElementById('dataFim').value;
+      const params = new URLSearchParams();
+      if (projeto) params.append('projeto', projeto);
+      if (inicio) params.append('inicio', inicio);
+      if (fim) params.append('fim', fim);
+
+      const resResumo = await fetch(`/api/dashboard/resumo?${params}`, { credentials: 'include' });
+      const resumo = await resResumo.json();
+
+      document.getElementById('totalHoras').textContent = resumo.totalHoras || 0;
+      document.getElementById('projetosAtivos').textContent = resumo.projetos || 0;
+      document.getElementById('totalUsuarios').textContent = resumo.usuarios || 0;
+
+      const resGrafico = await fetch(`/api/dashboard/grafico?${params}`, { credentials: 'include' });
+      const dados = await resGrafico.json();
+
+      const ctx = document.getElementById('graficoProjetos');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: dados.map(e => e.projeto),
+          datasets: [{
+            label: 'Horas',
+            data: dados.map(e => e.horas),
+            backgroundColor: '#04c2ca'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+      const resUltimos = await fetch(`/api/usuario/lancamentos?limite=10`, { credentials: 'include' });
+      const ultimos = await resUltimos.json();
+      const tabela = document.getElementById('tabelaLancamentos');
+      tabela.innerHTML = ultimos.map(l => `
+        <tr class="border-b">
+          <td class="py-1 px-3">${l.data}</td>
+          <td class="py-1 px-3">${l.hora_inicio}</td>
+          <td class="py-1 px-3">${l.hora_fim}</td>
+          <td class="py-1 px-3">${l.projeto}</td>
+        </tr>
+      `).join('');
+    }
+
+    async function carregarProjetos() {
+      const res = await fetch('/api/projetos', { credentials: 'include' });
+      const projetos = await res.json();
+      const select = document.getElementById('filtroProjeto');
+      projetos.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.nome;
+        opt.textContent = p.nome;
+        select.appendChild(opt);
+      });
+    }
+
+    function editarFoto() {
+      alert('Funcionalidade de edição de foto será implementada.');
+    }
+
+    async function logout() {
+      await fetch('/api/auth/logout', { credentials: 'include' });
+      location.href = '/login.html';
+    }
+
+    async function verificarPerfil() {
+      const res = await fetch('/api/auth/perfil', { credentials: 'include' });
+      if (res.ok) {
+        const { perfil } = await res.json();
+        if (perfil === 'administrador' || perfil === 'gerente') {
+          const menu = document.getElementById('menuLateral');
+          const link = document.createElement('a');
+          link.href = '/admin.html';
+          link.className = 'hover:bg-gray-700 px-3 py-2 rounded';
+          link.textContent = 'Administração';
+          menu.appendChild(link);
+        }
+      }
+    }
+
+    carregarProjetos();
+    carregarDashboard();
+    verificarPerfil();
+  </script>
+</body>
+</html>

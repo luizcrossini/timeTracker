@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parametrização - Time Tracker Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow space-y-10">
+    <h1 class="text-2xl font-bold">Parametrização do Sistema</h1>
+
+    <div id="conteudoRestrito" class="hidden space-y-10">
+      <!-- Cadastro de Projeto -->
+      <section>
+        <h2 class="text-lg font-semibold mb-4">Cadastrar Projeto</h2>
+        <form id="formProjeto" class="flex gap-4 items-end mb-4">
+          <input type="text" id="nomeProjeto" placeholder="Nome do projeto" class="flex-1 p-2 border rounded" required>
+          <button class="bg-blue-600 text-white px-4 py-2 rounded" type="submit">Salvar</button>
+        </form>
+        <ul id="listaProjetos" class="text-sm text-gray-700 space-y-1"></ul>
+      </section>
+
+      <!-- Cadastro de Centro de Custo Vinculado a Projeto -->
+      <section>
+        <h2 class="text-lg font-semibold mb-4">Cadastrar Centro de Custo</h2>
+        <form id="formCusto" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium">Projeto:</label>
+            <select id="projetoCusto" class="w-full p-2 border rounded" required></select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Nome do Centro de Custo:</label>
+            <input type="text" id="nomeCusto" placeholder="Nome" class="w-full p-2 border rounded" required>
+          </div>
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Salvar</button>
+        </form>
+        <ul id="listaCustos" class="mt-4 text-sm text-gray-700 space-y-1"></ul>
+      </section>
+
+      <!-- Cadastro de Usuário -->
+      <section>
+        <h2 class="text-lg font-semibold mb-4">Cadastrar Usuário</h2>
+        <form id="formUsuario" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium">Nome:</label>
+            <input type="text" id="nomeUsuario" placeholder="Nome completo" class="w-full p-2 border rounded" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium">E-mail:</label>
+            <input type="email" id="emailUsuario" placeholder="E-mail" class="w-full p-2 border rounded" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Departamento:</label>
+            <input type="text" id="departamentoUsuario" placeholder="Departamento" class="w-full p-2 border rounded" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Função:</label>
+            <select id="funcaoUsuario" class="w-full p-2 border rounded">
+              <option value="agente">Agente</option>
+              <option value="gerente">Gerente</option>
+              <option value="administrador">Administrador</option>
+            </select>
+          </div>
+          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Criar Usuário</button>
+        </form>
+      </section>
+    </div>
+
+    <p id="mensagemPermissao" class="text-center text-red-600 hidden">Acesso restrito. Apenas gerentes e administradores podem acessar esta página.</p>
+  </div>
+
+  <script>
+    async function verificarPermissao() {
+      const res = await fetch('/api/auth/perfil', { credentials: 'include' });
+      const dados = await res.json();
+      if (dados.perfil === 'administrador' || dados.perfil === 'gerente') {
+        document.getElementById('conteudoRestrito').classList.remove('hidden');
+        carregarProjetos();
+        carregarCentros();
+      } else {
+        document.getElementById('mensagemPermissao').classList.remove('hidden');
+        setTimeout(() => window.location.href = '/main-dashboard.html', 3000);
+      }
+    }
+
+    async function carregarProjetos() {
+      const res = await fetch('/api/projetos', { credentials: 'include' });
+      const projetos = await res.json();
+
+      const select = document.getElementById('projetoCusto');
+      const lista = document.getElementById('listaProjetos');
+      select.innerHTML = '';
+      lista.innerHTML = '';
+
+      projetos.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = p.nome;
+        select.appendChild(opt);
+
+        const item = document.createElement('li');
+        item.textContent = p.nome;
+        lista.appendChild(item);
+      });
+    }
+
+    async function carregarCentros() {
+      const res = await fetch('/api/centros-custo', { credentials: 'include' });
+      const custos = await res.json();
+
+      const lista = document.getElementById('listaCustos');
+      lista.innerHTML = '';
+      custos.forEach(c => {
+        const item = document.createElement('li');
+        item.textContent = `${c.nome} (Projeto: ${c.projeto})`;
+        lista.appendChild(item);
+      });
+    }
+
+    document.getElementById('formProjeto')?.addEventListener('submit', async e => {
+      e.preventDefault();
+      const nome = document.getElementById('nomeProjeto').value;
+      await fetch('/api/admin/projetos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ nome })
+      });
+      document.getElementById('formProjeto').reset();
+      carregarProjetos();
+    });
+
+    document.getElementById('formCusto')?.addEventListener('submit', async e => {
+      e.preventDefault();
+      const projetoId = document.getElementById('projetoCusto').value;
+      const nome = document.getElementById('nomeCusto').value;
+      await fetch('/api/admin/centros-custo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ nome, projetoId })
+      });
+      document.getElementById('formCusto').reset();
+      carregarCentros();
+    });
+
+    document.getElementById('formUsuario')?.addEventListener('submit', async e => {
+      e.preventDefault();
+      const nome = document.getElementById('nomeUsuario').value;
+      const email = document.getElementById('emailUsuario').value;
+      const departamento = document.getElementById('departamentoUsuario').value;
+      const perfil = document.getElementById('funcaoUsuario').value;
+
+      await fetch('/api/admin/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ nome, email, departamento, perfil })
+      });
+
+      alert('Usuário cadastrado com sucesso! O e-mail será enviado com instruções.');
+      document.getElementById('formUsuario').reset();
+    });
+
+    verificarPermissao();
+  </script>
+</body>
+</html>

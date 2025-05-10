@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Time Tracker Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#04c2ca',
+            secondary: '#0c6e78',
+            dark: '#142c34',
+            light: '#e5e6e7'
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-light dark:bg-dark text-gray-800 dark:text-white transition-colors duration-500">
+  <!-- Top Bar with Logo and Login -->
+  <header class="flex justify-between items-center px-6 md:px-16 py-4 bg-dark text-white">
+    <div class="flex items-center gap-3">
+      <img src="./Tracker Pro.png" alt="Logo" class="h-10">
+      <span class="text-xl font-bold">Time Tracker Pro</span>
+    </div>
+    <a href="login.html" class="bg-primary text-white px-4 py-2 rounded hover:opacity-90 transition">Login</a>
+  </header>
+
+  <!-- Dark Mode Toggle -->
+  <div class="fixed top-4 right-4 z-50">
+    <button onclick="document.documentElement.classList.toggle('dark')" class="bg-gray-200 dark:bg-gray-700 p-2 rounded-full shadow">
+      🌓
+    </button>
+  </div>
+
+  <!-- Hero -->
+  <section class="min-h-screen flex flex-col md:flex-row items-center justify-between px-6 md:px-16 bg-gradient-to-r from-primary to-secondary text-white">
+    <div class="max-w-xl space-y-6">
+      <h1 class="text-5xl font-bold leading-tight animate-fade-in">Controle Total das Horas dos seus Projetos</h1>
+      <p class="text-lg">Acompanhe o tempo gasto em cada tarefa, otimize recursos e aumente a produtividade da sua empresa.</p>
+      <button class="bg-white text-primary font-semibold px-6 py-3 rounded-full hover:scale-105 transition-transform">Solicitar Demonstração</button>
+    </div>
+    <div class="hidden md:block w-1/2 animate-slide-up">
+      <lottie-player src="https://assets6.lottiefiles.com/packages/lf20_kkflmtur.json" background="transparent" speed="1" loop autoplay></lottie-player>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="py-24 px-6 md:px-16">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold mb-4">Funcionalidades Principais</h2>
+      <p class="text-gray-600 dark:text-gray-300">Desenvolvido para gestores e equipes que valorizam eficiência.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="bg-light dark:bg-gray-800 p-6 rounded-xl shadow hover:scale-105 transition-transform">
+        <img src="https://img.icons8.com/ios-filled/50/04c2ca/time.png" class="mb-4" alt="Rastreamento de tempo">
+        <h3 class="text-xl font-semibold mb-2">Rastreamento de Tempo</h3>
+        <p>Registre o tempo dedicado por projeto, tarefa ou colaborador.</p>
+      </div>
+      <div class="bg-light dark:bg-gray-800 p-6 rounded-xl shadow hover:scale-105 transition-transform">
+        <img src="https://img.icons8.com/ios-filled/50/04c2ca/data-configuration.png" class="mb-4" alt="Relatórios e Insights">
+        <h3 class="text-xl font-semibold mb-2">Relatórios Inteligentes</h3>
+        <p>Visualize relatórios de produtividade e alocação de horas por centro de custo.</p>
+      </div>
+      <div class="bg-light dark:bg-gray-800 p-6 rounded-xl shadow hover:scale-105 transition-transform">
+        <img src="https://img.icons8.com/ios-filled/50/04c2ca/settings.png" class="mb-4" alt="Customização de Projetos">
+        <h3 class="text-xl font-semibold mb-2">Customização de Projetos</h3>
+        <p>Adapte as configurações de acordo com os turnos, usuários e departamentos.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Planos e Preços -->
+  <section class="bg-gray-100 dark:bg-gray-800 py-20 px-6 md:px-16" id="planos">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold mb-4">Planos e Preços</h2>
+      <p class="text-gray-600 dark:text-gray-300">Escolha o plano ideal para sua empresa.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white dark:bg-gray-700 p-8 rounded-xl text-center shadow">
+        <h3 class="text-xl font-bold mb-2">Starter</h3>
+        <p class="text-3xl font-bold text-primary">R$ 99/mês</p>
+        <ul class="mt-4 space-y-2 text-sm">
+          <li>✔ Até 3 usuários</li>
+          <li>✔ Relatórios básicos</li>
+          <li>✔ Suporte por e-mail</li>
+        </ul>
+      </div>
+      <div class="bg-white dark:bg-gray-700 p-8 rounded-xl text-center shadow border-2 border-primary">
+        <h3 class="text-xl font-bold mb-2">Profissional</h3>
+        <p class="text-3xl font-bold text-primary">R$ 49/mês</p>
+        <ul class="mt-4 space-y-2 text-sm">
+          <li>✔ Usuários ilimitados</li>
+          <li>✔ Dashboard completo</li>
+          <li>✔ Suporte premium</li>
+        </ul>
+      </div>
+      <div class="bg-white dark:bg-gray-700 p-8 rounded-xl text-center shadow">
+        <h3 class="text-xl font-bold mb-2">Corporativo</h3>
+        <p class="text-3xl font-bold text-primary">Sob Consulta</p>
+        <ul class="mt-4 space-y-2 text-sm">
+          <li>✔ Personalização avançada</li>
+          <li>✔ Integrações sob demanda</li>
+          <li>✔ Consultoria dedicada</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Final -->
+  <section class="bg-gradient-to-r from-primary to-secondary text-white text-center py-20 px-6 md:px-16">
+    <h2 class="text-4xl font-bold mb-6">Comece a rastrear o tempo de seus projetos agora mesmo</h2>
+    <button class="bg-white text-primary font-semibold px-8 py-3 rounded-full hover:scale-105 transition-transform">Solicitar uma Demonstração</button>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white py-12 px-6 md:px-16">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+      <p>&copy; 2025 Time Tracker Pro. Todos os direitos reservados.</p>
+      <div class="flex gap-4">
+        <a href="#" class="hover:underline">Política de Privacidade</a>
+        <a href="#" class="hover:underline">Termos de Uso</a>
+      </div>
+    </div>
+  </footer>
+
+  <style>
+    .animate-fade-in {
+      animation: fadeIn 1s ease-out;
+    }
+    .animate-slide-up {
+      animation: slideUp 1s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</body>
+</html>
